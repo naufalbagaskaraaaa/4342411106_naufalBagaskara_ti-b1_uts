@@ -4,12 +4,16 @@ class AppButton extends StatelessWidget {
   final String text;
   final VoidCallback onPressed;
   final bool isFullWidth;
+  final Color? backgroundColor;
+  final Color? textColor;
 
   const AppButton({
     super.key,
     required this.text,
     required this.onPressed,
     this.isFullWidth = true,
+    this.backgroundColor,
+    this.textColor,
   });
 
   @override
@@ -20,6 +24,8 @@ class AppButton extends StatelessWidget {
       child: ElevatedButton(
         onPressed: onPressed,
         style: ElevatedButton.styleFrom(
+          backgroundColor: backgroundColor,
+          foregroundColor: textColor,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8),
           ),
