@@ -2,8 +2,15 @@ import 'package:flutter/material.dart';
 import '../../widgets/app_button.dart';
 import '../../widgets/app_text_field.dart';
 
-class CreateTiketScreen extends StatelessWidget {
+class CreateTiketScreen extends StatefulWidget {
   const CreateTiketScreen({super.key});
+
+  @override
+  State<CreateTiketScreen> createState() => _CreateTiketScreenState();
+}
+
+class _CreateTiketScreenState extends State<CreateTiketScreen> {
+  bool isImageUploaded = false;
 
   @override
   Widget build(BuildContext context) {
@@ -37,8 +44,11 @@ class CreateTiketScreen extends StatelessWidget {
                 Expanded(
                   child: OutlinedButton.icon(
                     onPressed: () {
+                      setState(() {
+                        isImageUploaded = true;
+                      });
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Simulasi membuka Galeri Perangkat...')),
+                        const SnackBar(content: Text('Simulasi dari galeri berhasil diunggah!')),
                       );
                     },
                     icon: const Icon(Icons.photo_library),
@@ -49,8 +59,11 @@ class CreateTiketScreen extends StatelessWidget {
                 Expanded(
                   child: OutlinedButton.icon(
                     onPressed: () {
+                      setState(() {
+                        isImageUploaded = true;
+                      });
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Simulasi membuka Kamera...')),
+                        const SnackBar(content: Text('Simulasi dari kamera berhasil tertangkap!')),
                       );
                     },
                     icon: const Icon(Icons.camera_alt),
@@ -64,12 +77,24 @@ class CreateTiketScreen extends StatelessWidget {
             Container(
               height: 120,
               decoration: BoxDecoration(
-                color: Colors.grey.withOpacity(0.1),
+                color: isImageUploaded ? Colors.blue.withOpacity(0.1) : Colors.grey.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.grey.withOpacity(0.5), style: BorderStyle.solid),
+                border: Border.all(
+                  color: isImageUploaded ? Colors.blue : Colors.grey.withOpacity(0.5), 
+                  style: BorderStyle.solid
+                ),
               ),
-              child: const Center(
-                child: Text('Belum ada lampiran dipilih', style: TextStyle(color: Colors.grey)),
+              child: Center(
+                child: isImageUploaded 
+                  ? const Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.image, size: 40, color: Colors.blue),
+                        SizedBox(height: 8),
+                        Text('Gambar_Lampiran_1.jpg', style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold)),
+                      ],
+                    )
+                  : const Text('Belum ada lampiran dipilih', style: TextStyle(color: Colors.grey)),
               ),
             ),
 

@@ -8,7 +8,6 @@ class NotificationScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Simulasi data notifikasi (hardcoded map sederhana)
     final List<Map<String, dynamic>> dummyNotifUser = [
       {
         'title': 'Tiket Diperbarui',
