@@ -11,7 +11,8 @@ class NotificationScreen extends StatelessWidget {
     final List<Map<String, dynamic>> dummyNotifUser = [
       {
         'title': 'Tiket Diperbarui',
-        'message': 'Status tiket "Internet Mati" Anda telah diubah menjadi "In Progress".',
+        'message':
+            'Status tiket "Internet Mati" Anda telah diubah menjadi "In Progress".',
         'isRead': false,
         'time': '10 menit yang lalu',
         'relatedTiketId': 't1',
@@ -25,7 +26,8 @@ class NotificationScreen extends StatelessWidget {
       },
       {
         'title': 'Tiket Selesai',
-        'message': 'Tiket "Layar Blank" telah ditandai sebagai Resolved. Terima kasih.',
+        'message':
+            'Tiket "Layar Blank" telah ditandai sebagai Resolved. Terima kasih.',
         'isRead': true,
         'time': '1 hari yang lalu',
         'relatedTiketId': 't3',
@@ -42,7 +44,8 @@ class NotificationScreen extends StatelessWidget {
       },
       {
         'title': 'Ditugaskan (Assigned)',
-        'message': 'Anda ditugaskan (assigned) untuk menangani keluhan "Printer Error".',
+        'message':
+            'Anda ditugaskan (assigned) untuk menangani keluhan "Printer Error".',
         'isRead': false,
         'time': '1 jam yang lalu',
         'relatedTiketId': 't2',
@@ -52,9 +55,7 @@ class NotificationScreen extends StatelessWidget {
     final notifications = role == 'admin' ? dummyNotifAdmin : dummyNotifUser;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Notifikasi Saya'),
-      ),
+      appBar: AppBar(title: const Text('Notifikasi Saya')),
       body: notifications.isEmpty
           ? const Center(child: Text('Belum ada notifikasi.'))
           : ListView.separated(
@@ -63,21 +64,30 @@ class NotificationScreen extends StatelessWidget {
               itemBuilder: (context, index) {
                 final notif = notifications[index];
                 return ListTile(
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
                   tileColor: notif['isRead'] as bool
                       ? Colors.transparent
                       : Colors.blue.withOpacity(0.05), // indikator belum dibaca
                   leading: CircleAvatar(
-                    backgroundColor: (notif['isRead'] as bool) ? Colors.grey[300] : Colors.blue[100],
+                    backgroundColor: (notif['isRead'] as bool)
+                        ? Colors.grey[300]
+                        : Colors.blue[100],
                     child: Icon(
                       Icons.notifications,
-                      color: (notif['isRead'] as bool) ? Colors.grey : Colors.blue,
+                      color: (notif['isRead'] as bool)
+                          ? Colors.grey
+                          : Colors.blue,
                     ),
                   ),
                   title: Text(
                     notif['title'] as String,
                     style: TextStyle(
-                      fontWeight: (notif['isRead'] as bool) ? FontWeight.normal : FontWeight.bold,
+                      fontWeight: (notif['isRead'] as bool)
+                          ? FontWeight.normal
+                          : FontWeight.bold,
                     ),
                   ),
                   subtitle: Column(
@@ -88,23 +98,25 @@ class NotificationScreen extends StatelessWidget {
                       const SizedBox(height: 4),
                       Text(
                         notif['time'] as String,
-                        style: const TextStyle(fontSize: 12, color: Colors.grey),
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey,
+                        ),
                       ),
                     ],
                   ),
                   onTap: () {
                     final tiketRelevan = DummyData.tikets.firstWhere(
                       (t) => t.id == notif['relatedTiketId'],
-                      orElse: () => DummyData.tikets.first, // fallback pencegah error
+                      orElse: () =>
+                          DummyData.tikets.first, // fallback pencegah error
                     );
 
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => DetailTiketScreen(
-                          tiket: tiketRelevan,
-                          role: role,
-                        ),
+                        builder: (context) =>
+                            DetailTiketScreen(tiket: tiketRelevan, role: role),
                       ),
                     );
                   },
