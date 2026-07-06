@@ -190,11 +190,14 @@ Helpdesk clicks "Selesai/Finish" → status: close
 - ✅ Reset password screen
 - ✅ Authentication state management
 
-**Step 9: Presentation Layer - Tiket Screens (User)** ⏳ PENDING
-- [ ] List tiket screen (user's tickets only)
-- [ ] Create tiket screen with form
-- [ ] Detail tiket screen with comments
-- [ ] Implement user-specific filters
+**Step 9: Presentation Layer - Tiket Screens (User)** ✅ COMPLETED
+- ✅ List tiket screen (user's tickets only) - Riverpod `tiketListProvider`
+- ✅ Create tiket screen with form - `createTiketUseCase`, status auto-set to `open`
+- ✅ Detail tiket screen with comments - `tiketDetailProvider` + `komentarListProvider`, add comment via `addKomentarUseCase`
+- ✅ Implement user-specific filters - status ChoiceChips (Semua/Open/Assigned/In Progress/Closed)
+- ✅ Added `currentUserProvider` to expose signed-in user id/role to ticket screens
+- ✅ No manual status change UI for users (automated workflow preserved)
+- ✅ `flutter analyze` passes (0 errors), `flutter test` passes
 
 **Step 10: Presentation Layer - Tiket Screens (Admin/Helpdesk)** ⏳ PENDING
 - [ ] Admin dashboard with all tickets
@@ -651,9 +654,9 @@ flutter clean                      # Clean build cache
 
 ## Progress Tracking
 
-**Last Updated:** 2026-07-07 (Phase 4-8 in progress)
-**Current Step:** Step 9 - Presentation Layer Tiket Screens (User)
-**Overall Progress:** 8/15 steps completed (53.3%)
+**Last Updated:** 2026-07-06 (Step 9 completed)
+**Current Step:** Step 10 - Presentation Layer Tiket Screens (Admin/Helpdesk)
+**Overall Progress:** 9/15 steps completed (60.0%)
 **Application Status:** ✅ **RUNNING & VERIFIED**
 
 ### Phase 1-3 Validation Summary ✅
