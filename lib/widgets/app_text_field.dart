@@ -6,6 +6,11 @@ class AppTextField extends StatelessWidget {
   final bool isPassword;
   final TextEditingController? controller;
   final IconData? prefixIcon;
+  final String? Function(String?)? validator;
+  final TextInputAction? textInputAction;
+  final ValueChanged<String>? onFieldSubmitted;
+  final bool autocorrect;
+  final bool enableSuggestions;
 
   const AppTextField({
     super.key,
@@ -14,6 +19,11 @@ class AppTextField extends StatelessWidget {
     this.isPassword = false,
     this.controller,
     this.prefixIcon,
+    this.validator,
+    this.textInputAction,
+    this.onFieldSubmitted,
+    this.autocorrect = true,
+    this.enableSuggestions = true,
   });
 
   @override
@@ -21,6 +31,11 @@ class AppTextField extends StatelessWidget {
     return TextFormField(
       controller: controller,
       obscureText: isPassword,
+      validator: validator,
+      textInputAction: textInputAction,
+      autocorrect: autocorrect,
+      enableSuggestions: enableSuggestions,
+      onFieldSubmitted: onFieldSubmitted,
       decoration: InputDecoration(
         labelText: label,
         hintText: hint,

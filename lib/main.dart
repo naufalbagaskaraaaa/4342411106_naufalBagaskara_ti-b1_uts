@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:e_ticketing_helpdesk/core/config/app_config.dart';
 import 'package:e_ticketing_helpdesk/core/theme/app_theme.dart';
 import 'package:e_ticketing_helpdesk/core/theme/theme_notifier.dart';
-import 'package:e_ticketing_helpdesk/screens/splash/splash_screen.dart';
+import 'package:e_ticketing_helpdesk/screens/auth/login_screen.dart';
 
-void main() {
-  runApp(const MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize app configuration and Supabase
+  await AppConfig.initialize();
+
+  runApp(const ProviderScope(child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -17,11 +24,11 @@ class MyApp extends StatelessWidget {
       builder: (context, currentMode, _) {
         return MaterialApp(
           title: 'E-Ticketing Helpdesk',
-          debugShowCheckedModeBanner: false, // menghilangkan banner debug
+          debugShowCheckedModeBanner: false,
           theme: AppTheme.lightTheme,
           darkTheme: AppTheme.darkTheme,
-          themeMode: currentMode, // mrespons dari theme_notifier.dart
-          home: const SplashScreen(),
+          themeMode: currentMode,
+          home: const LoginScreen(),
         );
       },
     );

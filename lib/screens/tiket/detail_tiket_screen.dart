@@ -130,7 +130,7 @@ class _DetailTiketScreenState extends State<DetailTiketScreen> {
                                 labelText: 'Update Status Tiket',
                                 border: OutlineInputBorder(),
                               ),
-                              value: _statusToString(_tempStatus),
+                              initialValue: _statusToString(_tempStatus),
                               items: ['Open', 'In Progress', 'Resolved', 'Closed']
                                   .map((s) => DropdownMenuItem(value: s, child: Text(s)))
                                   .toList(),
@@ -148,7 +148,7 @@ class _DetailTiketScreenState extends State<DetailTiketScreen> {
                                 labelText: 'Assign (Tugaskan Ke)',
                                 border: OutlineInputBorder(),
                               ),
-                              value: 'Belum di-assign',
+                              initialValue: 'Belum di-assign',
                               items: ['Belum di-assign', 'Admin Ali', 'Admin Budi', 'Helpdesk Cici']
                                   .map((s) => DropdownMenuItem(value: s, child: Text(s)))
                                   .toList(),
