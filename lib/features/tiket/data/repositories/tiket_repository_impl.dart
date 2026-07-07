@@ -1,4 +1,5 @@
 import 'package:dartz/dartz.dart';
+import 'package:uuid/uuid.dart';
 import '../datasources/supabase_tiket_datasource.dart';
 import '../models/komentar_model.dart';
 import '../models/tiket_model.dart';
@@ -10,6 +11,7 @@ import '../../domain/repositories/tiket_repository.dart';
 /// Bridges the domain layer with the data layer.
 class TiketRepositoryImpl implements TiketRepository {
   final SupabaseTiketDataSource dataSource;
+  static const _uuid = Uuid();
 
   TiketRepositoryImpl(this.dataSource);
 
@@ -85,7 +87,7 @@ class TiketRepositoryImpl implements TiketRepository {
       );
       return Right(updatedModel.toEntity());
     } catch (e) {
-      return Left(TiketFailure('Unexpected error: ${e.toString()}'));
+      return Left(_mapStatusTransitionError(e));
     }
   }
 
@@ -104,7 +106,7 @@ class TiketRepositoryImpl implements TiketRepository {
       );
       return Right(updatedModel.toEntity());
     } catch (e) {
-      return Left(TiketFailure('Unexpected error: ${e.toString()}'));
+      return Left(_mapStatusTransitionError(e));
     }
   }
 
@@ -121,7 +123,7 @@ class TiketRepositoryImpl implements TiketRepository {
       );
       return Right(updatedModel.toEntity());
     } catch (e) {
-      return Left(TiketFailure('Unexpected error: ${e.toString()}'));
+      return Left(_mapStatusTransitionError(e));
     }
   }
 
@@ -179,7 +181,32 @@ class TiketRepositoryImpl implements TiketRepository {
     });
   }
 
-  String _generateId() {
-    return DateTime.now().microsecondsSinceEpoch.toString();
+  /// FIXED: sebelumnya pakai `DateTime.now().microsecondsSinceEpoch.toString()`,
+  /// yang menghasilkan string angka BUKAN UUID valid. Kolom `id` di tabel
+  /// `tickets`/`comments` bertipe UUID (`DEFAULT gen_random_uuid()`), jadi id
+  /// buatan sendiri harus benar-benar berformat UUID v4, atau insert akan gagal
+  /// dengan error "invalid input syntax for type uuid".
+  String _generateId() => _uuid.v4();
+
+  /// Mengekstrak pesan asli dari trigger Postgres (RAISE EXCEPTION) supaya
+  /// pesan error yang sampai ke use case/UI bersih, bukan string
+  /// "Unexpected error: Failed to update ticket status: PostgrestException(...)"
+  /// yang berlapis-lapis dan sulit ditampilkan ke pengguna.
+  TiketFailure _mapStatusTransitionError(Object e) {
+    final raw = e.toString();
+
+    // PostgrestException biasanya berbentuk:
+    // PostgrestException(message: <pesan RAISE EXCEPTION>, code: P0001, ...)
+    final match = RegExp(r'message:\s*([^,]+(?:,[^,]+)*?)(?:,\s*code:|\))')
+        .firstMatch(raw);
+
+    if (match != null) {
+      final cleanMessage = match.group(1)?.trim();
+      if (cleanMessage != null && cleanMessage.isNotEmpty) {
+        return TiketFailure(cleanMessage);
+      }
+    }
+
+    return TiketFailure('Gagal mengubah status tiket: $raw');
   }
 }

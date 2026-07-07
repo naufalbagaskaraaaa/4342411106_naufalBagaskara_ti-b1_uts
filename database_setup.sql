@@ -1,13 +1,19 @@
--- E-Ticketing Helpdesk Database Setup Script
--- Run this in your Supabase SQL Editor
+-- ============================================
+-- 1. BERSIH-BERSIH DATA LAMA (TEARDOWN)
+-- ============================================
+DROP VIEW IF EXISTS tickets_with_users CASCADE;
+DROP VIEW IF EXISTS comments_with_users CASCADE;
+DROP TABLE IF EXISTS comments CASCADE;
+DROP TABLE IF EXISTS tickets CASCADE;
+DROP TABLE IF EXISTS users CASCADE;
 
 -- ============================================
--- TABLES
+-- 2. BUAT TABEL BARU DENGAN UUID
 -- ============================================
 
 -- Users table
-CREATE TABLE IF NOT EXISTS users (
-  id TEXT PRIMARY KEY,
+CREATE TABLE users (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   email TEXT UNIQUE NOT NULL,
   nama TEXT NOT NULL,
   role TEXT NOT NULL CHECK (role IN ('user', 'admin', 'helpdesk')),
@@ -16,39 +22,39 @@ CREATE TABLE IF NOT EXISTS users (
 );
 
 -- Tickets table
-CREATE TABLE IF NOT EXISTS tickets (
-  id TEXT PRIMARY KEY,
+CREATE TABLE tickets (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   judul TEXT NOT NULL,
   deskripsi TEXT NOT NULL,
   status TEXT NOT NULL CHECK (status IN ('open', 'assign', 'in_progress', 'close')),
-  id_user TEXT NOT NULL REFERENCES users(id),
-  id_admin TEXT REFERENCES users(id),
-  id_helpdesk TEXT REFERENCES users(id),
+  id_user UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  id_admin UUID REFERENCES users(id) ON DELETE SET NULL,
+  id_helpdesk UUID REFERENCES users(id) ON DELETE SET NULL,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
 -- Comments table
-CREATE TABLE IF NOT EXISTS comments (
-  id TEXT PRIMARY KEY,
-  id_tiket TEXT NOT NULL REFERENCES tickets(id),
-  id_user TEXT NOT NULL REFERENCES users(id),
+CREATE TABLE comments (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  id_tiket UUID NOT NULL REFERENCES tickets(id) ON DELETE CASCADE,
+  id_user UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   isi TEXT NOT NULL,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
 -- ============================================
--- INDEXES
+-- 3. INDEXES
 -- ============================================
 
-CREATE INDEX IF NOT EXISTS idx_tickets_user ON tickets(id_user);
-CREATE INDEX IF NOT EXISTS idx_tickets_admin ON tickets(id_admin);
-CREATE INDEX IF NOT EXISTS idx_tickets_helpdesk ON tickets(id_helpdesk);
-CREATE INDEX IF NOT EXISTS idx_tickets_status ON tickets(status);
-CREATE INDEX IF NOT EXISTS idx_comments_tiket ON comments(id_tiket);
+CREATE INDEX idx_tickets_user ON tickets(id_user);
+CREATE INDEX idx_tickets_admin ON tickets(id_admin);
+CREATE INDEX idx_tickets_helpdesk ON tickets(id_helpdesk);
+CREATE INDEX idx_tickets_status ON tickets(status);
+CREATE INDEX idx_comments_tiket ON comments(id_tiket);
 
 -- ============================================
--- ROW LEVEL SECURITY (RLS)
+-- 4. ROW LEVEL SECURITY (RLS)
 -- ============================================
 
 -- Enable RLS
@@ -62,7 +68,7 @@ CREATE POLICY "Enable all access for development" ON tickets FOR ALL USING (true
 CREATE POLICY "Enable all access for development" ON comments FOR ALL USING (true) WITH CHECK (true);
 
 -- ============================================
--- FUNCTIONS AND TRIGGERS
+-- 5. FUNCTIONS AND TRIGGERS
 -- ============================================
 
 -- Function to update updated_at timestamp
@@ -86,42 +92,42 @@ CREATE TRIGGER update_tickets_updated_at
     EXECUTE FUNCTION update_updated_at_column();
 
 -- ============================================
--- SAMPLE DATA
+-- 6. SAMPLE DATA (Using valid UUIDs)
 -- ============================================
 
 -- Insert sample users
 INSERT INTO users (id, email, nama, role) VALUES
-  ('u1', 'admin@example.com', 'Admin', 'admin'),
-  ('u2', 'naufal@example.com', 'Naufal', 'user'),
-  ('u3', 'bagaskara@example.com', 'Bagaskara', 'user'),
-  ('u4', 'helpdesk@example.com', 'Helpdesk', 'helpdesk')
+  ('11111111-1111-1111-1111-111111111111', 'admin@example.com', 'Admin', 'admin'),
+  ('22222222-2222-2222-2222-222222222222', 'naufal@example.com', 'Naufal', 'user'),
+  ('33333333-3333-3333-3333-333333333333', 'bagaskara@example.com', 'Bagaskara', 'user'),
+  ('44444444-4444-4444-4444-444444444444', 'helpdesk@example.com', 'Helpdesk', 'helpdesk')
 ON CONFLICT (id) DO NOTHING;
 
 -- Insert sample tickets
 INSERT INTO tickets (id, judul, deskripsi, status, id_user, id_admin, id_helpdesk) VALUES
-  ('t1', 'Internet Mati', 'Router kedip merah sejak pagi.', 'open', 'u2', null, null),
-  ('t2', 'Printer Error', 'Kertas nyangkut di dalam printer.', 'in_progress', 'u3', 'u1', 'u4'),
-  ('t3', 'Layar Blank', 'Monitor mati tapi PC nyala.', 'close', 'u2', 'u1', 'u4'),
-  ('t4', 'Lupa Password Email', 'Tolong reset password Outlook.', 'close', 'u3', 'u1', 'u4'),
-  ('t5', 'Mouse Rusak', 'Kursor tidak bergerak sama sekali.', 'open', 'u2', null, null)
+  ('aaaa0000-0000-0000-0000-000000000001', 'Internet Mati', 'Router kedip merah sejak pagi.', 'open', '22222222-2222-2222-2222-222222222222', null, null),
+  ('aaaa0000-0000-0000-0000-000000000002', 'Printer Error', 'Kertas nyangkut di dalam printer.', 'in_progress', '33333333-3333-3333-3333-333333333333', '11111111-1111-1111-1111-111111111111', '44444444-4444-4444-4444-444444444444'),
+  ('aaaa0000-0000-0000-0000-000000000003', 'Layar Blank', 'Monitor mati tapi PC nyala.', 'close', '22222222-2222-2222-2222-222222222222', '11111111-1111-1111-1111-111111111111', '44444444-4444-4444-4444-444444444444'),
+  ('aaaa0000-0000-0000-0000-000000000004', 'Lupa Password Email', 'Tolong reset password Outlook.', 'close', '33333333-3333-3333-3333-333333333333', '11111111-1111-1111-1111-111111111111', '44444444-4444-4444-4444-444444444444'),
+  ('aaaa0000-0000-0000-0000-000000000005', 'Mouse Rusak', 'Kursor tidak bergerak sama sekali.', 'open', '22222222-2222-2222-2222-222222222222', null, null)
 ON CONFLICT (id) DO NOTHING;
 
 -- Insert sample comments
 INSERT INTO comments (id, id_tiket, id_user, isi, created_at) VALUES
-  ('k1', 't1', 'u2', 'Tolong segera dibantu ya, butuh untuk meeting.', NOW() - INTERVAL '1 day 20 hours'),
-  ('k2', 't1', 'u1', 'Baik pak, tim sedang meluncur ke ruangan bapak.', NOW() - INTERVAL '1 day 10 hours'),
-  ('k3', 't2', 'u3', 'Printer di lantai 2 sebelah pantry.', NOW() - INTERVAL '20 hours'),
-  ('k4', 't2', 'u1', 'Siap, sedang saya cek fisiknya sekarang.', NOW() - INTERVAL '2 hours'),
-  ('k5', 't3', 'u2', 'Kabel VGA sudah saya cek tapi masih no signal.', NOW() - INTERVAL '2 days 10 hours'),
-  ('k6', 't3', 'u1', 'Kabelnya putus di dalam pak, sudah saya ganti baru.', NOW() - INTERVAL '2 days 1 hour'),
-  ('k7', 't4', 'u3', 'Bisa lewat WA saja password barunya?', NOW() - INTERVAL '4 days 20 hours'),
-  ('k8', 't4', 'u1', 'Password baru sudah kami kirim via WhatsApp pribadi.', NOW() - INTERVAL '4 days 5 hours'),
-  ('k9', 't5', 'u2', 'Baterai sudah diganti dua kali tetap mati.', NOW() - INTERVAL '50 minutes'),
-  ('k10', 't5', 'u1', 'Bawa memousenya ke ruang IT lantai 1 pak untuk ditukar.', NOW() - INTERVAL '10 minutes')
+  ('bbbb0000-0000-0000-0000-000000000001', 'aaaa0000-0000-0000-0000-000000000001', '22222222-2222-2222-2222-222222222222', 'Tolong segera dibantu ya, butuh untuk meeting.', NOW() - INTERVAL '1 day 20 hours'),
+  ('bbbb0000-0000-0000-0000-000000000002', 'aaaa0000-0000-0000-0000-000000000001', '11111111-1111-1111-1111-111111111111', 'Baik pak, tim sedang meluncur ke ruangan bapak.', NOW() - INTERVAL '1 day 10 hours'),
+  ('bbbb0000-0000-0000-0000-000000000003', 'aaaa0000-0000-0000-0000-000000000002', '33333333-3333-3333-3333-333333333333', 'Printer di lantai 2 sebelah pantry.', NOW() - INTERVAL '20 hours'),
+  ('bbbb0000-0000-0000-0000-000000000004', 'aaaa0000-0000-0000-0000-000000000002', '11111111-1111-1111-1111-111111111111', 'Siap, sedang saya cek fisiknya sekarang.', NOW() - INTERVAL '2 hours'),
+  ('bbbb0000-0000-0000-0000-000000000005', 'aaaa0000-0000-0000-0000-000000000003', '22222222-2222-2222-2222-222222222222', 'Kabel VGA sudah saya cek tapi masih no signal.', NOW() - INTERVAL '2 days 10 hours'),
+  ('bbbb0000-0000-0000-0000-000000000006', 'aaaa0000-0000-0000-0000-000000000003', '11111111-1111-1111-1111-111111111111', 'Kabelnya putus di dalam pak, sudah saya ganti baru.', NOW() - INTERVAL '2 days 1 hour'),
+  ('bbbb0000-0000-0000-0000-000000000007', 'aaaa0000-0000-0000-0000-000000000004', '33333333-3333-3333-3333-333333333333', 'Bisa lewat WA saja password barunya?', NOW() - INTERVAL '4 days 20 hours'),
+  ('bbbb0000-0000-0000-0000-000000000008', 'aaaa0000-0000-0000-0000-000000000004', '11111111-1111-1111-1111-111111111111', 'Password baru sudah kami kirim via WhatsApp pribadi.', NOW() - INTERVAL '4 days 5 hours'),
+  ('bbbb0000-0000-0000-0000-000000000009', 'aaaa0000-0000-0000-0000-000000000005', '22222222-2222-2222-2222-222222222222', 'Baterai sudah diganti dua kali tetap mati.', NOW() - INTERVAL '50 minutes'),
+  ('bbbb0000-0000-0000-0000-000000000010', 'aaaa0000-0000-0000-0000-000000000005', '11111111-1111-1111-1111-111111111111', 'Bawa memousenya ke ruang IT lantai 1 pak untuk ditukar.', NOW() - INTERVAL '10 minutes')
 ON CONFLICT (id) DO NOTHING;
 
 -- ============================================
--- REAL-TIME SUBSCRIPTIONS SETUP
+-- 7. REAL-TIME SUBSCRIPTIONS SETUP
 -- ============================================
 
 -- Enable real-time for tables
@@ -129,7 +135,7 @@ ALTER TABLE tickets REPLICA IDENTITY FULL;
 ALTER TABLE comments REPLICA IDENTITY FULL;
 
 -- ============================================
--- VIEWS FOR COMMON QUERIES
+-- 8. VIEWS FOR COMMON QUERIES
 -- ============================================
 
 -- View for tickets with user and admin details
