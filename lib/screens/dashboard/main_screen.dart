@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:e_ticketing_helpdesk/features/tiket/presentation/screens/list_tiket_screen.dart'
+    as feature_tiket;
 import 'dashboard_screen.dart';
 import '../tiket/list_tiket_screen.dart';
 import '../profile/profile_screen.dart';
@@ -17,7 +19,11 @@ class _MainScreenState extends State<MainScreen> {
 
   late final List<Widget> _screens = [
     DashboardScreen(role: widget.role),
-    ListTiketScreen(role: widget.role),
+    // Regular users get the Riverpod-backed ticket screens; admin/helpdesk
+    // still use the legacy list until their screens are migrated (Step 10).
+    widget.role == 'user'
+        ? const feature_tiket.ListTiketScreen()
+        : ListTiketScreen(role: widget.role),
     ProfileScreen(role: widget.role),
   ];
 

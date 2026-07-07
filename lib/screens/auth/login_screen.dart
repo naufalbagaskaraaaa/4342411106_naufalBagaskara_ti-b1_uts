@@ -38,6 +38,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             password: _passwordController.text,
           );
 
+      ref.read(currentUserProvider.notifier).state = result;
+
       if (!mounted) return;
       Navigator.pushReplacement(
         context,
