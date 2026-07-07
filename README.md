@@ -16,7 +16,7 @@ Supabase
 4. jalankan database/database_setup.sql di Supabase SQL Editor
 
 # Kredensial:
-1. admin@example.com Password123!
-2. naufal@example.com Password123! #user
-3. helpdesk@example.com Password123
-4. teknisi@example.com Password123! 
+1. admin@example.com, pw: Password123!
+2. naufal@example.com, Password123! #user
+3. helpdesk@example.com, Password123
+4. teknisi@example.com, Password123! 
