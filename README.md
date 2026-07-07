@@ -1,17 +1,22 @@
-# e_ticketing_helpdesk
+# MOBILE PRAKTIKUM - TI-B4
 
-A new Flutter project.
+Naufal Bagaskara
+434241106
 
-## Getting Started
+## Tech stack
+Flutter
+Metodologi Riverpod
+Supabase
 
-This project is a starting point for a Flutter application.
+## how to run
 
-A few resources to get you started if this is your first Flutter project:
+1. flutter pub get
+2. cp .env.example .env   #lalu isi SUPABASE_URL & SUPABASE_ANON_KEY
+3. flutter run
+4. jalankan database/database_setup.sql di Supabase SQL Editor
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+# Kredensial:
+1. admin@example.com Password123!
+2. naufal@example.com Password123! #user
+3. helpdesk@example.com Password123
+4. teknisi@example.com Password123! 
