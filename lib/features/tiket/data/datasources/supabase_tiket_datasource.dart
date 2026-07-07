@@ -36,7 +36,12 @@ class SupabaseTiketDataSourceImpl implements SupabaseTiketDataSource {
           .from(SupabaseConstants.ticketsTable)
           .insert(tiket.toJson())
           .select()
-          .single();
+          .maybeSingle();
+
+      // Tambahkan pengecekan null
+      if (response == null) {
+        throw Exception('Gagal membuat tiket: respons dari server kosong.');
+      }
 
       return TiketModel.fromJson(response);
     } catch (e) {
@@ -84,7 +89,12 @@ class SupabaseTiketDataSourceImpl implements SupabaseTiketDataSource {
           .from(SupabaseConstants.ticketsTable)
           .select()
           .eq('id', tiketId)
-          .single();
+          .maybeSingle();
+
+      // Tambahkan pengecekan null
+      if (response == null) {
+        throw Exception('Data tiket tidak ditemukan.');
+      }
 
       return TiketModel.fromJson(response);
     } catch (e) {
@@ -95,12 +105,10 @@ class SupabaseTiketDataSourceImpl implements SupabaseTiketDataSource {
   @override
   Future<TiketModel> updateTiketStatus(
     String tiketId,
-    TiketStatus newStatus,
-    {
+    TiketStatus newStatus, {
     String? adminId,
     String? helpdeskId,
-  }
-  ) async {
+  }) async {
     try {
       final statusStr = _statusToString(newStatus);
       final updateData = <String, dynamic>{
@@ -119,7 +127,12 @@ class SupabaseTiketDataSourceImpl implements SupabaseTiketDataSource {
           .update(updateData)
           .eq('id', tiketId)
           .select()
-          .single();
+          .maybeSingle();
+
+      // Tambahkan pengecekan null
+      if (response == null) {
+        throw Exception('Gagal memperbarui status tiket: tiket tidak ditemukan.');
+      }
 
       return TiketModel.fromJson(response);
     } catch (e) {
@@ -134,7 +147,12 @@ class SupabaseTiketDataSourceImpl implements SupabaseTiketDataSource {
           .from(SupabaseConstants.commentsTable)
           .insert(komentar.toJson())
           .select()
-          .single();
+          .maybeSingle();
+
+      // Tambahkan pengecekan null
+      if (response == null) {
+        throw Exception('Gagal menambahkan komentar: respons dari server kosong.');
+      }
 
       return KomentarModel.fromJson(response);
     } catch (e) {

@@ -38,7 +38,12 @@ class SupabaseAuthDataSourceImpl implements SupabaseAuthDataSource {
           .from(SupabaseConstants.usersTable)
           .select()
           .eq('id', user.id)
-          .single();
+          .maybeSingle();
+
+      // Tambahkan pengecekan null
+      if (userData == null) {
+        throw const AppAuthException('Login failed: User data not found in database');
+      }
 
       return UserModel.fromJson(userData);
     } on AppAuthException {
@@ -79,7 +84,12 @@ class SupabaseAuthDataSourceImpl implements SupabaseAuthDataSource {
           .from(SupabaseConstants.usersTable)
           .select()
           .eq('id', user.id)
-          .single();
+          .maybeSingle();
+
+      // Tambahkan pengecekan null
+      if (userData == null) {
+        throw const AppAuthException('Registration failed: Could not retrieve created user data');
+      }
 
       return UserModel.fromJson(userData);
     } on AppAuthException {
@@ -124,7 +134,12 @@ class SupabaseAuthDataSourceImpl implements SupabaseAuthDataSource {
           .update(updateData)
           .eq('id', userId)
           .select()
-          .single();
+          .maybeSingle();
+
+      // Tambahkan pengecekan null
+      if (response == null) {
+        throw const AppAuthException('Profile update failed: User not found');
+      }
 
       return UserModel.fromJson(response);
     } catch (e) {
@@ -153,7 +168,10 @@ class SupabaseAuthDataSourceImpl implements SupabaseAuthDataSource {
           .from(SupabaseConstants.usersTable)
           .select()
           .eq('id', user.id)
-          .single();
+          .maybeSingle();
+
+      // Jika userData kosong, kembalikan null agar tidak error saat fromJson
+      if (userData == null) return null;
 
       return UserModel.fromJson(userData);
     } catch (e) {
